@@ -84,6 +84,10 @@ enum {
  BT_DISCONN,
  BT_CLOSED
 };
+#define BT_AMP_POLICY 10
+#define BT_AMP_POLICY_REQUIRE_BR_EDR 0
+#define BT_AMP_POLICY_PREFER_BR_EDR 1
+#define BT_AMP_POLICY_PREFER_AMP 2
 #if __BYTE_ORDER == __LITTLE_ENDIAN
 /* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
 #define htobs(d) (d)
@@ -107,6 +111,12 @@ typedef struct {
  uint8_t b[6];
 /* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
 } __attribute__((packed)) bdaddr_t;
+
+static inline void bacpy(bdaddr_t *dst, const bdaddr_t *src)
+{
+	memcpy(dst, src, sizeof(bdaddr_t));
+}
+
 #define BDADDR_ANY (&(bdaddr_t) {{0, 0, 0, 0, 0, 0}})
 #define BDADDR_ALL (&(bdaddr_t) {{0xff, 0xff, 0xff, 0xff, 0xff, 0xff}})
 #define BDADDR_LOCAL (&(bdaddr_t) {{0, 0, 0, 0xff, 0xff, 0xff}})

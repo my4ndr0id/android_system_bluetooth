@@ -45,6 +45,20 @@ static int do_is_enabled() {
     return ret;
 }
 
+static int do_dut_mode_enable() {
+    int ret;
+    ret = bt_dut_mode_enable();
+    printf("= %d\n", ret);
+    return ret;
+}
+
+static int do_hci_cmd_reset() {
+    int ret;
+    ret = hci_cmd(0x03, 0x03, 0x00, NULL);
+    printf("= %d\n", ret);
+    return ret;
+}
+
 struct {
     char *name;
     int (*ptr)();
@@ -52,6 +66,8 @@ struct {
     {"enable", do_enable},
     {"disable", do_disable},
     {"is_enabled", do_is_enabled},
+    {"dut_mode_enable", do_dut_mode_enable},
+    {"hci_cmd_reset", do_hci_cmd_reset},
     {NULL, NULL},
 };
 
