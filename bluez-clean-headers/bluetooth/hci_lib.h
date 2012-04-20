@@ -43,10 +43,6 @@ struct hci_version {
 /* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
 #ifdef __cplusplus
 #endif
-int hci_open_dev(int dev_id);
-int hci_close_dev(int dd);
-int hci_send_cmd(int dd, uint16_t ogf, uint16_t ocf, uint8_t plen, void *param);
-int hci_get_route(bdaddr_t *bdaddr);
 static inline int hci_test_bit(int nr, void *addr)
 {
 	return *((uint32_t *) addr + (nr >> 5)) & (1 << (nr & 31));

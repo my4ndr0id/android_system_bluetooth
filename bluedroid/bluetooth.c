@@ -32,17 +32,6 @@
 
 #include <bluedroid/bluetooth.h>
 
-#define HCI_ENABLE_DEVICE_UNDER_TEST_MODE_OGF 0x06
-#define HCI_ENABLE_DEVICE_UNDER_TEST_MODE_OCF 0x03
-#define HCI_SET_EVENT_FILTER_OGF              0x03
-#define HCI_SET_EVENT_FILTER_OCF              0x05
-#define HCI_WRITE_SCAN_ENABLE_OGF             0x03
-#define HCI_WRITE_SCAN_ENABLE_OCF             0x1A
-#define HCI_WRITE_AUTHENTICATION_ENABLE_OGF   0x03
-#define HCI_WRITE_AUTHENTICATION_ENABLE_OCF   0x20
-#define HCI_WRITE_ENCRYPTION_MODE_OGF         0x03
-#define HCI_WRITE_ENCRYPTION_MODE_OCF         0x22
-
 #ifndef HCI_DEV_ID
 #define HCI_DEV_ID 0
 #endif
@@ -200,40 +189,6 @@ static inline int create_hci_sock() {
     return sk;
 }
 
-int hci_cmd(uint8_t ogf, uint16_t ocf,
-            uint16_t params_len, uint8_t *params)
-{
-
-    int dd, ret, dev_id = -1;
-
-    LOGI("Getting Device ID");
-    dev_id = hci_get_route(NULL);
-    if(dev_id < 0) {
-        LOGE("No Device found");
-        return dev_id;
-    }
-
-    dd = hci_open_dev(dev_id);
-    if(dd < 0) {
-        LOGE("Device open failed");
-        return dd;
-    }
-
-    LOGV("HCI Command: ogf 0x%02x, ocf 0x%04x, plen %d\n",
-          ogf, ocf, params_len);
-
-    if((ret = hci_send_cmd(dd, ogf, ocf, params_len, params)) < 0) {
-        LOGE("HCI command send failed");
-    } else {
-        LOGV("HCI command send success");
-        ret = 1;
-    }
-
-    hci_close_dev(dd);
-    return ret;
-}
-
-
 int bt_enable() {
     LOGV(__FUNCTION__);
 
@@ -380,61 +335,6 @@ int bt_is_enabled() {
 
 out:
     if (hci_sock >= 0) close(hci_sock);
-    return ret;
-}
-
-int bt_dut_mode_enable() {
-    int ret = -1;
-    uint8_t cmd_set_event_filter_params[] = {
-        /* FILTER_TYPE: 02 - Connection Setup */
-        /* FILTER_CONDITION_TYPE: 00 - Allow All Connections */
-        /* AUTO ACCEPT FLAG: 02 - Auto accept: Role switch disabled */
-        0x02, 0x00, 0x02
-    };
-    uint8_t cmd_write_scan_enable_params[] = {
-        /* SCAN_ENABLE: 3 - PageScan & InquiryScan Enabled */
-        0x03
-    };
-    uint8_t cmd_write_auth_enable_params[] = {
-        /* AUTHENTICATION: 0 - Disabled */
-        0x00
-    };
-    uint8_t cmd_write_encrpt_enable_params[] = {
-        /* ENCRYPTION MODE: 0 - Disabled */
-        0x00
-    };
-
-    LOGV(__FUNCTION__);
-    if((ret = hci_cmd(HCI_ENABLE_DEVICE_UNDER_TEST_MODE_OGF,
-                  HCI_ENABLE_DEVICE_UNDER_TEST_MODE_OCF,
-                  0, /* No params */
-                  NULL)) < 0) {
-        LOGE("HCI_ENABLE_DEVICE_UNDER_TEST_MODE failed");
-    } else if((ret = hci_cmd(HCI_SET_EVENT_FILTER_OGF,
-                         HCI_SET_EVENT_FILTER_OCF,
-                         sizeof(cmd_set_event_filter_params),
-                         cmd_set_event_filter_params)) < 0) {
-        LOGE("HCI_SET_EVENT_FILTER failed");
-    } else if((ret = hci_cmd(HCI_WRITE_SCAN_ENABLE_OGF,
-                         HCI_WRITE_SCAN_ENABLE_OCF,
-                         sizeof(cmd_write_scan_enable_params),
-                         cmd_write_scan_enable_params)) < 0) {
-        LOGE("HCI_WRITE_SCAN_ENABLE failed");
-    } else if((ret = hci_cmd(HCI_WRITE_AUTHENTICATION_ENABLE_OGF,
-                         HCI_WRITE_AUTHENTICATION_ENABLE_OCF,
-                         sizeof(cmd_write_auth_enable_params),
-                         cmd_write_auth_enable_params)) < 0) {
-        LOGE("HCI_WRITE_AUTHENTICATION_ENABLE failed");
-    } else if((ret = hci_cmd(HCI_WRITE_ENCRYPTION_MODE_OGF,
-                         HCI_WRITE_ENCRYPTION_MODE_OCF,
-                         sizeof(cmd_write_encrpt_enable_params),
-                         cmd_write_encrpt_enable_params)) < 0) {
-        LOGE("HCI_WRITE_ENCRYPTION_MODE failed");
-    } else {
-        LOGE("Enable DUT mode success");
-        ret = 1; //implies enable DUT mode is successful
-    }
-
     return ret;
 }
 

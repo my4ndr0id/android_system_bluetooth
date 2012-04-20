@@ -42,13 +42,6 @@ int bt_disable();
 /* Returns 1 if enabled, 0 if disabled, and -ve on error */
 int bt_is_enabled();
 
-/* Returns 1 if enabled, -1 on error */
-int bt_dut_mode_enable();
-
-/* Returns 1 if HCI cmd send successful, -1 on error */
-int hci_cmd(uint8_t ogf, uint16_t ocf,
-            uint16_t params_len, uint8_t *params);
-
 int ba2str(const bdaddr_t *ba, char *str);
 int str2ba(const char *str, bdaddr_t *ba);
 

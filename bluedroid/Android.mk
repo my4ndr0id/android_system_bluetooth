@@ -14,8 +14,7 @@ LOCAL_C_INCLUDES := \
 	system/bluetooth/bluez-clean-headers
 
 LOCAL_SHARED_LIBRARIES := \
-	libcutils \
-	libbluetooth
+	libcutils
 
 LOCAL_MODULE := libbluedroid
 
